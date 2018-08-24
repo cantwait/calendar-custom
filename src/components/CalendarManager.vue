@@ -41,13 +41,13 @@ export default Vue.extend({
     },
     onSubmitValues(data) {
       console.log('onSubmitValues')
-      this.onResetForm();
       this.buildArrayOfMonths(data.startDate, data.endDate)
     },
     getTimeSeries(startDate, endDate) {
-      var dateArray = [];
-      var currentDate = moment(startDate);
-      while (currentDate <= endDate) {
+      let dateArray = [];
+      let currentDate = moment(startDate);
+      let eDate = moment([endDate.year(), endDate.month(), endDate.daysInMonth()])
+      while (currentDate <= eDate) {
           dateArray.push( moment(currentDate).format('YYYY-MM-DD') )
           currentDate = moment(currentDate).add(1, 'months');
       }
@@ -63,8 +63,8 @@ export default Vue.extend({
         }
 
         let endDay = endDay = moment(timeSeries[i]).daysInMonth()
-        if (i === timeSeries.length - 1) {
-          endDay = moment(endDate).date() - 1
+        if (i === timeSeries.length - 1 && timeSeries.length > 1) {
+          endDay = moment(endDate).date()
         }
         this.dateArr.push({
           startDay,

@@ -1,28 +1,24 @@
 <template>
-  <div class="cal-container">
-    <div class="cal-header">
-      <h2>This is the calendar component</h2>
-    </div>
-    <div class="cal-calendar">
-      <h3>{{ month }} - {{ year }}</h3>
-      <table class="cal-table">
+  <div >
+    <b-card :title="monthTitle">
+      <p class="card-text">
+        <table class="calendar-table">
             <thead>
             <tr>
-                <th>Sun</th>
-                <th>Mon</th>
-                <th>Tue</th>
-                <th>Wed</th>
-                <th>Thu</th>
-                <th>Fri</th>
-                <th>Sat</th>
+                <th>S</th>
+                <th>M</th>
+                <th>T</th>
+                <th>W</th>
+                <th>T</th>
+                <th>F</th>
+                <th>S</th>
             </tr>
             </thead>
-
             <tbody ref="calendarbody">
-
             </tbody>
       </table>
-    </div>
+      </p>
+    </b-card>
   </div>
 
 </template>
@@ -31,11 +27,13 @@ import Vue from "vue"
 import * as moment from 'moment'
 
 export default Vue.extend({
+  props: ['inputs'],
   data() {
     return {
-      startDay: 15,
-      month: 8,
-      year: 2018
+      startDay: 0,
+      month: 0,
+      year: 0,
+      endDay: 0
     };
   },
   methods: {
@@ -53,41 +51,45 @@ export default Vue.extend({
       for (let i = 0; i < classNames.length; i++) {
         el.classList.add(classNames[i]);
       }
+    },
+    toMonthString() {
+      return moment([this.year, this.month]).format('MMMM')
     }
   },
   computed: {
+    monthTitle: function() {
+      return this.toMonthString() + ' ' + this.year
+    },
     renderCalendar() {
-      //debugger;
-      const currentDate = moment([this.year, this.month - 1])
+      const currentDate = moment([this.year, this.month])
       const firstDay = currentDate.day();
-      const daysInMonth = moment([this.year,this.month - 1]).daysInMonth()
+      const daysInMonth = moment([this.year,this.month]).daysInMonth()
+      //const endDayOfMonth = moment([this.year, this.month,this.endDay]).day()
 
       let tbl = this.$refs['calendarbody'] // body of the calendar
 
       // clearing all previous cells
       tbl.innerHTML = "";
-
-      // creating all cells
+      let days = 0;
+      // creating all cellsd
       let date = 1;
       for (let i = 0; i < 6; i++) {
         // creates a table row
         let row = document.createElement("tr");
         //creating individual cells, filing them up with data.
         for (let j = 0; j < 7; j++) {
-          if (i === 0 && j < firstDay) {
+          if ((i === 0 && j < firstDay) || days >= this.endDay) {
             row.appendChild(this.createCell("", "cell-empty"));
           } else if (date > daysInMonth) {
-            break;
+            row.appendChild(this.createCell("", "cell-empty"));
           } else {
             if (date < this.startDay) {
               //add blank cell
               row.appendChild(this.createCell("", "cell-empty"));
+              days++
             } else {
               // let cell = document.createElement("td");
               // let cellText = document.createTextNode(date);
-              if (date === currentDate.day() && this.year === currentDate.year() && this.month === currentDate.month() - 1) {
-                cell.classList.add("bg-info");
-              } // color today's date
               // cell.appendChild(cellText);
               let cell = null;
               if (j === 0 || j === 6) {
@@ -95,11 +97,13 @@ export default Vue.extend({
               } else {
                 cell = this.createCell(date, "cell-weekday");
               }
+              days++;
               row.appendChild(cell);
             }
 
             date++;
           }
+
         }
 
         tbl.appendChild(row); // appending each row into calendar body.
@@ -107,6 +111,11 @@ export default Vue.extend({
     }
   },
   mounted() {
+    this.startDay = this.inputs.startDay
+    this.endDay = this.inputs.endDay
+    this.year = this.inputs.year
+    this.month = this.inputs.month
+    console.log(JSON.stringify(this.inputs));
     this.renderCalendar();
   }
 });
@@ -115,16 +124,18 @@ export default Vue.extend({
 .cell {
   height: 30px;
   width: 30px;
-  border: 1px;
 }
 .cell-weekday {
-  background-color: green;
+  background-color: lightgreen;
 }
 .cell-weekend {
   background-color: yellow;
 }
 .cell-empty {
-  background-color: gray;
+  background-color: lightgray;
+}
+table, th, td, tr {
+  border: 1px solid white
 }
 </style>
 

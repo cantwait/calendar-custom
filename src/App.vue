@@ -1,12 +1,20 @@
 <template>
   <div id="app">
-    <h1>{{ msg }}</h1>
-    <calendar/>
+    <b-container>
+      <b-row>
+        <h1>{{ msg }}</h1>
+      </b-row>
+      <b-row>
+        <b-col>
+          <calendar-manager></calendar-manager>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
 <script>
-import Calendar from './components/Calendar';
+import CalendarManager from './components/CalendarManager'
 
 export default {
   name: 'app',
@@ -16,7 +24,7 @@ export default {
     }
   },
   components: {
-    'calendar': Calendar,
+    'calendar-manager': CalendarManager
   }
 }
 </script>
